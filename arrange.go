@@ -55,9 +55,19 @@ func main() {
 	fmt.Println(teamsArray[0].name)
 
 	for i := 0; i < len(teamsArray); i++ {
-		teamsArray[i].ranking = i + 1
+		if (i > 0) {
+			fmt.Println("hi")
+			if (teamsArray[i-1].score == teamsArray[i].score) {
+				fmt.Println("heya")
+				teamsArray[i].ranking = teamsArray[i-1].ranking
+			}
+			
+		} else {
+			teamsArray[i].ranking = teamsArray[i-1].ranking + 1
+		}
 	}
 
+	fmt.Println("helloyeetus")
 	err = os.Remove("rankings.txt")
 	if err != nil {
 		log.Fatal(err)
