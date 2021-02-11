@@ -93,27 +93,41 @@ func main() {
 	team2Struct := contains(teamsArray, team2)
 	arrayValue2 := containsForCounter(teamsArray, team2)
 
-	if (team2Struct.rank <= 15 && team1Struct.rank >= 30) {
+	if (team1Struct.rank <= 15 && team2Struct.rank >= 30) {
 		team1Struct.score += 5
+		fmt.Println(team1Struct.score)
 		team2Struct.score -= 2
+		fmt.Println(team2Struct.score)
 	} else if (team1Struct.rank - team2Struct.rank < 0) {
 		team1Struct.score += 5
+		fmt.Println(team1Struct.score)
 		team2Struct.score -= 5
+		fmt.Println(team2Struct.score)
 	} else if team1Struct.rank - team2Struct.rank <= 5{
 		team1Struct.score += 10
-		team1Struct.score -= 10
+		fmt.Println(team1Struct.score)
+		team2Struct.score -= 10
+		fmt.Println(team2Struct.score)
 	} else if team1Struct.rank - team2Struct.rank <= 10 {
 		team1Struct.score += 15
+		fmt.Println(team1Struct.score)
 		team2Struct.score -= 15
+		fmt.Println(team2Struct.score)
 	} else if team1Struct.rank - team2Struct.rank <= 20 {
 		team1Struct.score += 20
+		fmt.Println(team1Struct.score)
 		team2Struct.score -= 20
+		fmt.Println(team2Struct.score)
 	} else if team1Struct.rank - team2Struct.rank <= 30 {
 		team1Struct.score += 25
+		fmt.Println(team1Struct.score)
 		team2Struct.score -= 25
+		fmt.Println(team2Struct.score)
 	} else if team1Struct.rank - team2Struct.rank > 30 {
 		team1Struct.score += 30
+		fmt.Println(team1Struct.score)
 		team2Struct.score -= 30
+		fmt.Println(team2Struct.score)
 	} 
 	
 	err := os.Remove("rankings.txt")
