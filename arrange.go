@@ -92,5 +92,8 @@ func main() {
 		}
 		fmt.Printf("Successfuly printed %v bytes\n", l)
 	}
-	fmt.Scan()
+	fmt.Println("Enter to close program")
+	var i string
+	fmt.Scanln(&i)
+	fmt.Println(i)
 }

@@ -163,5 +163,8 @@ func main() {
 		}
 		fmt.Printf("Successfully updated %v bytes", l)
 	}
-	fmt.Scan()
+	fmt.Println("Enter to close program")
+	var i string
+	fmt.Scanln(&i)
+	fmt.Println(i)
 }
