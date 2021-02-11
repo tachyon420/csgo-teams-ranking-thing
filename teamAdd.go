@@ -38,6 +38,17 @@ func main() {
 	}
 	file.Close()
 
+	err := os.Remove("rankings.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	newFile, err := os.Create("rankings.txt")
+	if err != nil {
+		log.Fatal(err)
+		fmt.Println(newFile)
+	}
+
 	file, err := os.OpenFile("rankings.txt", os.O_RDWR|os.O_APPEND, 0660)
 	if err != nil {
 		fmt.Println("error opening file,", err)
