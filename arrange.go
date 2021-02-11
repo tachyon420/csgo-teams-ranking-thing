@@ -60,11 +60,11 @@ func main() {
 			if (teamsArray[i-1].score == teamsArray[i].score) {
 				fmt.Println("heya")
 				teamsArray[i].ranking = teamsArray[i-1].ranking
-			}
-			
-		} else {
+			} else {
 			teamsArray[i].ranking = teamsArray[i-1].ranking + 1
 		}
+		teamsArray[i].ranking = i
+		} 
 	}
 
 	fmt.Println("helloyeetus")
