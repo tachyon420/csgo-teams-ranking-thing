@@ -108,6 +108,11 @@ func main() {
 		fmt.Println(team1Struct.score)
 		team2Struct.score -= 10
 		fmt.Println(team2Struct.score)
+	} else if team1Struct.rank == team2Struct.rank{
+		team1Struct.score += 7
+		fmt.Println(team1Struct.score)
+		team2Struct.score -= 7
+		fmt.Println(team2Struct.score)
 	} else if team1Struct.rank - team2Struct.rank <= 10 {
 		team1Struct.score += 15
 		fmt.Println(team1Struct.score)
@@ -158,4 +163,5 @@ func main() {
 		}
 		fmt.Printf("Successfully updated %v bytes", l)
 	}
+	fmt.Scan()
 }

@@ -92,5 +92,5 @@ func main() {
 		}
 		fmt.Printf("Successfuly printed %v bytes\n", l)
 	}
-
+	fmt.Scan()
 }
