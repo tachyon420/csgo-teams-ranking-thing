@@ -63,7 +63,7 @@ func contains(array []Team, str string) Team {
 			return array[i]
 		}
 	}
-	fmt.Println("error - name not available. Maybe you forgot an underscore? CTRL+C to close the program.")
+	fmt.Println("error - name not available. Maybe you forgot an underscore? CTRL+C to close the program")
 	var a string
 	fmt.Scan(&a)
 	os.Exit(1)
@@ -153,15 +153,16 @@ func main() {
 	} 
 
 	// SCORE DIFFERENCE ADJUSTMENT DISPARITY ON BEST OF (X) AND SCORING
-	if bo == 1 {
+	switch bo {
+	case 1:
 		winning *= 0.9
 		losing *= 0.9
-	} else if bo == 3 {
+	case 3:
 		if scoring == "2-0" {
 			winning *= 1.2
 			losing *= 1.2
 		}
-	} else if bo == 5 {
+	case 5:
 		if scoring == "3-0" {
 			winning *= 1.3
 			losing *= 1.3
@@ -170,7 +171,7 @@ func main() {
 			losing *= 1.15
 		}
 	}
-
+	
 	// ADJUST NEW SCORES
 	team1Struct.score += winning
 	team2Struct.score -= losing
