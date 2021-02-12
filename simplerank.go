@@ -63,7 +63,7 @@ func contains(array []Team, str string) Team {
 			return array[i]
 		}
 	}
-	fmt.Println("error - name not available. Maybe you forgot an underscore?")
+	fmt.Println("error - name not available. Maybe you forgot an underscore? CTRL+C to close the program.")
 	var a string
 	fmt.Scan(&a)
 	os.Exit(1)
