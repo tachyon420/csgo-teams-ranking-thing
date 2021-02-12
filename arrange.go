@@ -13,7 +13,7 @@ import (
 type Team struct {
 	name    string
 	ranking int
-	score   int
+	score   float64
 }
 
 func main() {
@@ -39,7 +39,7 @@ func main() {
 		if err1 != nil {
 			log.Fatal(err1)
 		}
-		score, err2 := strconv.Atoi(teamsA[i][2])
+		score, err2 := strconv.ParseFloat(teamsA[i][2], 32)
 		fmt.Println(score)
 		if err2 != nil {
 			log.Fatal(err2)
@@ -87,7 +87,7 @@ func main() {
 	}
 	
 	for i := 0; i < len(teamsArray); i++ {
-		total := teamsArray[i].name + " " + strconv.Itoa(teamsArray[i].ranking) + " " + strconv.Itoa(teamsArray[i].score) + "\n"
+		total := teamsArray[i].name + " " + strconv.Itoa(teamsArray[i].ranking) + " " + fmt.Sprintf("%.1f", teamsArray[i].score) + "\n"
 		l, err := file.WriteString(total)
 		if err != nil {
 			log.Fatal(err)

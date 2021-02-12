@@ -12,7 +12,7 @@ import (
 type Team struct{
 	name string
 	rank int
-	score int
+	score float64
 }
 
 func createTeamArray(filename string) []Team {
@@ -46,7 +46,7 @@ func createTeamArray(filename string) []Team {
 			log.Fatal(err)
 		}
 
-		score, err := strconv.Atoi(teamsA[i][2])
+		score, err := strconv.ParseFloat(teamsA[i][2], 32)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -92,49 +92,87 @@ func main() {
 	arrayValue1 := containsForCounter(teamsArray, team1)
 	team2Struct := contains(teamsArray, team2)
 	arrayValue2 := containsForCounter(teamsArray, team2)
+	var winning float64
+	var losing float64
 
+	var (
+		bo int
+		scoring	string
+	)
+
+	fmt.Println("Best of how many games?")
+	fmt.Scan(&bo)
+
+	fmt.Println("Overall score?")
+	fmt.Scan(&scoring)
+
+	// SCORE DIFFERENCE ASSIGNMENT DISPARITY ON CLOSENESS OF RANKS
 	if (team1Struct.rank <= 15 && team2Struct.rank >= 30) {
-		team1Struct.score += 5
+		winning = 5
 		fmt.Println(team1Struct.score)
-		team2Struct.score -= 2
+		losing = 2
 		fmt.Println(team2Struct.score)
 	} else if (team1Struct.rank - team2Struct.rank < 0) {
-		team1Struct.score += 5
+		winning = 5
 		fmt.Println(team1Struct.score)
-		team2Struct.score -= 5
+		losing = 5
 		fmt.Println(team2Struct.score)
 	} else if team1Struct.rank - team2Struct.rank <= 5{
-		team1Struct.score += 10
+		winning = 10
 		fmt.Println(team1Struct.score)
-		team2Struct.score -= 10
+		losing = 10
 		fmt.Println(team2Struct.score)
 	} else if team1Struct.rank == team2Struct.rank{
-		team1Struct.score += 7
+		winning = 7
 		fmt.Println(team1Struct.score)
-		team2Struct.score -= 7
+		losing = 7
 		fmt.Println(team2Struct.score)
 	} else if team1Struct.rank - team2Struct.rank <= 10 {
-		team1Struct.score += 15
+		winning = 15
 		fmt.Println(team1Struct.score)
 		team2Struct.score -= 15
 		fmt.Println(team2Struct.score)
 	} else if team1Struct.rank - team2Struct.rank <= 20 {
-		team1Struct.score += 20
+		winning = 20
 		fmt.Println(team1Struct.score)
-		team2Struct.score -= 20
+		losing = 20
 		fmt.Println(team2Struct.score)
 	} else if team1Struct.rank - team2Struct.rank <= 30 {
-		team1Struct.score += 25
+		winning = 25
 		fmt.Println(team1Struct.score)
-		team2Struct.score -= 25
+		losing = 25
 		fmt.Println(team2Struct.score)
 	} else if team1Struct.rank - team2Struct.rank > 30 {
-		team1Struct.score += 30
+		winning = 30
 		fmt.Println(team1Struct.score)
-		team2Struct.score -= 30
+		losing = 30
 		fmt.Println(team2Struct.score)
 	} 
+
+	// SCORE DIFFERENCE ADJUSTMENT DISPARITY ON BEST OF (X) AND SCORING
+	if bo == 1 {
+		winning *= 0.9
+		losing *= 0.9
+	} else if bo == 3 {
+		if scoring == "2-0" {
+			winning *= 1.2
+			losing *= 1.2
+		}
+	} else if bo == 5 {
+		if scoring == "3-0" {
+			winning *= 1.3
+			losing *= 1.3
+		} else if scoring == "3-1" {
+			winning *= 1.15
+			losing *= 1.15
+		}
+	}
+
+	// ADJUST NEW SCORES
+	team1Struct.score += winning
+	team2Struct.score -= losing
 	
+	// DELETE OLD FILE AND CREATE NEW ONE
 	err := os.Remove("rankings.txt")
 	if err != nil {
 		log.Fatal(err)
@@ -156,7 +194,7 @@ func main() {
 	teamsArray[arrayValue2] = team2Struct
 
 	for i := 0; i < len(teamsArray); i++ {
-		total := teamsArray[i].name + " " + strconv.Itoa(teamsArray[i].rank) + " " + strconv.Itoa(teamsArray[i].score) + "\n"
+		total := teamsArray[i].name + " " + strconv.Itoa(teamsArray[i].rank) + " " + fmt.Sprintf("%f", teamsArray[i].score) + "\n"
 		l, err := file.WriteString(total)
 		if err != nil {
 			log.Fatal(err)
