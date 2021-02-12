@@ -44,7 +44,7 @@ func createTeamArray(filename string) []Team {
 		ranking, err := strconv.Atoi(teamsA[i][1])
 		if err != nil {
 			log.Fatal(err)
-		}
+		}	
 
 		score, err := strconv.ParseFloat(teamsA[i][2], 32)
 		if err != nil {
@@ -62,8 +62,11 @@ func contains(array []Team, str string) Team {
 		if array[i].name == str {
 			return array[i]
 		}
-		fmt.Println("error - name not available. Maybe you forgot an underscore?")
 	}
+	fmt.Println("error - name not available. Maybe you forgot an underscore?")
+	var a string
+	fmt.Scan(&a)
+	os.Exit(1)
 	return array[0]
 }
 
