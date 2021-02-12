@@ -133,7 +133,7 @@ func main() {
 	} else if team1Struct.rank - team2Struct.rank <= 10 {
 		winning = 15
 		fmt.Println(team1Struct.score)
-		team2Struct.score -= 15
+		losing = 15
 		fmt.Println(team2Struct.score)
 	} else if team1Struct.rank - team2Struct.rank <= 20 {
 		winning = 20
