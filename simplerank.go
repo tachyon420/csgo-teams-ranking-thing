@@ -115,8 +115,16 @@ func main() {
 		scoring	string
 	)
 
-	fmt.Println("Best of how many games?")
-	fmt.Scan(&bo)
+	bestOfCorrect := false
+	for bestOfCorrect == false {
+		fmt.Println("Best of how many games?")
+		fmt.Scan(&bo)
+		if bo == 1 || bo == 3 || bo == 5 {
+			bestOfCorrect = true
+			break
+		}
+	}
+	
 
 	fmt.Println("Overall score?")
 	fmt.Scan(&scoring)
@@ -124,44 +132,28 @@ func main() {
 	// SCORE DIFFERENCE ASSIGNMENT DISPARITY ON CLOSENESS OF RANKS
 	if (team1Struct.rank <= 15 && team2Struct.rank >= 30) {
 		winning = 5
-		fmt.Println(team1Struct.score)
 		losing = 2
-		fmt.Println(team2Struct.score)
 	} else if (team1Struct.rank - team2Struct.rank < 0) {
 		winning = 5
-		fmt.Println(team1Struct.score)
 		losing = 5
-		fmt.Println(team2Struct.score)
 	} else if team1Struct.rank - team2Struct.rank <= 5{
 		winning = 10
-		fmt.Println(team1Struct.score)
 		losing = 10
-		fmt.Println(team2Struct.score)
 	} else if team1Struct.rank == team2Struct.rank{
 		winning = 7
-		fmt.Println(team1Struct.score)
 		losing = 7
-		fmt.Println(team2Struct.score)
 	} else if team1Struct.rank - team2Struct.rank <= 10 {
 		winning = 15
-		fmt.Println(team1Struct.score)
 		losing = 15
-		fmt.Println(team2Struct.score)
 	} else if team1Struct.rank - team2Struct.rank <= 20 {
 		winning = 20
-		fmt.Println(team1Struct.score)
 		losing = 20
-		fmt.Println(team2Struct.score)
 	} else if team1Struct.rank - team2Struct.rank <= 30 {
 		winning = 25
-		fmt.Println(team1Struct.score)
 		losing = 25
-		fmt.Println(team2Struct.score)
 	} else if team1Struct.rank - team2Struct.rank > 30 {
 		winning = 30
-		fmt.Println(team1Struct.score)
 		losing = 30
-		fmt.Println(team2Struct.score)
 	} 
 
 	// SCORE DIFFERENCE ADJUSTMENT DISPARITY ON BEST OF (X) AND SCORING
@@ -314,25 +306,156 @@ func main() {
 			losing *= (losingA/3)			
 		}
 	case 5:
-		if scoring == "3-0" {
-			winning *= 1.3
-			losing *= 1.3
-		} else if scoring == "3-1" {
-			winning *= 1.15
-			losing *= 1.15
+		
+		
+		//declare initial won games
+		var game1 string
+		fmt.Println("Enter game score 1")
+		fmt.Scan(&game1)
+		
+		var game2 string
+		fmt.Println("Enter game score 2")
+		fmt.Scan(&game2)
+
+		var game3 string
+		fmt.Println("Enter game score 3")
+		fmt.Scan(&game3)
+
+		//splitting the game 1
+		game1Split := strings.Split(game1, "-")
+		game1Win, err := strconv.Atoi(game1Split[0])
+		if err != nil {
+			ending(1)
 		}
+		game1Lose, err := strconv.Atoi(game1Split[1])
+		if err != nil {
+			ending(1)
+		}
+
+		game2Split := strings.Split(game2, "-")
+		game2Win, err := strconv.Atoi(game2Split[0])
+		if err != nil {
+			ending(1)
+		}
+		game2Lose, err := strconv.Atoi(game2Split[1])
+		if err != nil {
+			ending(1)
+		}
+
+		game3Split := strings.Split(game3, "-")
+		game3Win, err := strconv.Atoi(game3Split[0])
+		if err != nil {
+			ending(1)
+		}
+		game3Lose, err := strconv.Atoi(game3Split[1])
+		if err != nil {
+			ending(1)
+		}
+
+		//declare the multipliers
+		var winningA float64
+		var losingA float64
+
 		switch scoring {
 		case "3-0":
-			winning *= 1.3
-			losing *= 1.3
+			winningA += 1.3
+			losingA += 0.7
 		case "3-1":
-			winning *= 1.15
-			losing *= 1.15
-		case "3-2":
-			// hello
+			winningA += 1.15
+			losingA += 0.85
+		}
+
+		diffArray := []int{game1Win, game1Lose, game2Win, game2Lose, game3Win, game3Lose}
+
+		//for loop to calculate the multipliers in accordance to the diffArray
+		for i := 0; i < 6; i += 2 {
+			diff := diffArray[0] - diffArray[i+1]
+			if diff <= 4 {
+				winningA += 0.8
+				losingA += 0.85
+			} else if diff <= 9 {
+				winningA += 1.10
+				losingA += 1
+			} else if diff <= 13 {
+				winningA += 1.35
+				losingA += 1.20
+			} else if diff <= 16 {
+				winningA += 1.50
+				losingA += 1.40
+			}
+		}
+
+		winning *= (winningA/3)
+		losing *= (losingA/3)
+		
+		//if loops to check the other scoring standard, for games lost
+		if scoring == "3-1" || scoring == "3-2" {
+			var game4 string
+			fmt.Println("Enter the game they lost")
+			fmt.Scan(&game4)
+
+			//splitting game 4
+			game4Split := strings.Split(game4, "-")
+			game4Lose, err := strconv.Atoi(game4Split[0])
+			if err != nil {
+				ending(1)
+			}
+			game4Win, err := strconv.Atoi(game4Split[1])
+			if err != nil {
+				ending(1)
+			}
+
+			diffArrayLost := append(diffArray, game4Win, game4Lose)
+			// to make sure it divides correctly
+			mult := 1.0
+
+			if scoring == "3-2" {
+				mult = 2.0
+
+				var game5 string
+				fmt.Println("enter the last game they lost")
+				fmt.Scan(&game5)
+
+				//splitting game5
+				game5Split := strings.Split(game5, "-")
+				game5Lose, err := strconv.Atoi(game5Split[0])
+				if err != nil {
+					ending(1)
+				}	
+				game5Win, err := strconv.Atoi(game5Split[1])
+				if err != nil {
+					ending(1)
+				}
+
+				//add the values to the array
+				diffArrayLost = append(diffArrayLost, game5Win, game5Lose) 
+			}
+			var winningB float64
+			var losingB float64
+
+			for i := 0; i < len(diffArrayLost); i+= 2 {
+				diff := diffArrayLost[i] - diffArrayLost[i+1]
+				if diff <= 4 {
+					winningB += 1.10
+					losingB += 1.10
+				} else if diff <= 9 {
+					winningB += 1
+					losingB += 0.9
+				} else if diff <= 13 {
+					winningB += 0.7
+					losingB += 0.8
+				} else if diff <= 16 {
+					winningB += 0.50
+					losingB += 0.65
+				}
+			}
+
+			
+			winning *= (winningB/mult)
+			losing *= (losingB/mult)
 		}
 	default:
-		ending(3)
+		ending(3)	
 	}
 	
 	// ADJUST NEW SCORES
@@ -366,11 +489,12 @@ func main() {
 	for i := 0; i < len(teamsArray); i++ {
 		total := teamsArray[i].name + " " + strconv.Itoa(teamsArray[i].rank) + " " + fmt.Sprintf("%f", teamsArray[i].score) + "\n"
 		l, err := file.WriteString(total)
+		
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal(err, l)
 			ending(1)
 		}
-		fmt.Printf("Successfully updated %v bytes", l)
+		// fmt.Printf("Successfully updated %v bytes", l)
 	}
 	fmt.Println("Enter to close program")
 	var i string
