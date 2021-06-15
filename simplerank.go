@@ -34,9 +34,14 @@ func createTeamArray(filename string) []Team {
 		ending(1)
 	}
 
+	fmt.Println(contents)
+
 	// Convert to string and split each line into a splice
 	teams := string(contents)
+	fmt.Println(teams)
 	teamsB := strings.Split(teams, "\n")
+
+	fmt.Println(teamsB)
 	
 	// Create the 2D splice
 	var teamsA [][]string
@@ -77,6 +82,7 @@ func contains(array []Team, str string) Team {
 		}
 	}
 	fmt.Println("error - name not available. Maybe you forgot an underscore? CTRL+C to close the program")
+	fmt.Println(array)
 	var a string
 	fmt.Scan(&a)
 	os.Exit(1)
@@ -92,75 +98,18 @@ func containsForCounter(array []Team, str string) int {
 	return -1
 }
 
-func main() {
-	teamsArray := createTeamArray("rankings.txt")
-	
-	var team1 string
-	fmt.Println("Enter the name of the winning team")
-	fmt.Scan(&team1)
-
-	var team2 string
-	fmt.Println("Enter the name of the losing team")
-	fmt.Scan(&team2)
-
-	team1Struct := contains(teamsArray, team1)
-	arrayValue1 := containsForCounter(teamsArray, team1)
-	team2Struct := contains(teamsArray, team2)
-	arrayValue2 := containsForCounter(teamsArray, team2)
-	var winning float64
-	var losing float64
-
+func scoreComparison(bo int, scoring string, winning float64, losing float64) (float64, float64, float64, float64, []string, []string) {
 	var (
-		bo int
-		scoring	string
+		winningCh float64
+		losingCh float64
+		scoreArray []string
+		mapMultArray []string
 	)
-
-	bestOfCorrect := false
-	for bestOfCorrect == false {
-		fmt.Println("Best of how many games?")
-		fmt.Scan(&bo)
-		if bo == 1 || bo == 3 || bo == 5 {
-			bestOfCorrect = true
-			break
-		}
-	}
-	
-
-	fmt.Println("Overall score?")
-	fmt.Scan(&scoring)
-
-	// SCORE DIFFERENCE ASSIGNMENT DISPARITY ON CLOSENESS OF RANKS
-	if (team1Struct.rank <= 15 && team2Struct.rank >= 30) {
-		winning = 5
-		losing = 2
-	} else if (team1Struct.rank - team2Struct.rank < 0) {
-		winning = 5
-		losing = 5
-	} else if team1Struct.rank - team2Struct.rank <= 5{
-		winning = 10
-		losing = 10
-	} else if team1Struct.rank == team2Struct.rank{
-		winning = 7
-		losing = 7
-	} else if team1Struct.rank - team2Struct.rank <= 10 {
-		winning = 15
-		losing = 15
-	} else if team1Struct.rank - team2Struct.rank <= 20 {
-		winning = 20
-		losing = 20
-	} else if team1Struct.rank - team2Struct.rank <= 30 {
-		winning = 25
-		losing = 25
-	} else if team1Struct.rank - team2Struct.rank > 30 {
-		winning = 30
-		losing = 30
-	} 
-
-	// SCORE DIFFERENCE ADJUSTMENT DISPARITY ON BEST OF (X) AND SCORING
 	switch bo {
 	case 1:
 		winning *= 0.9
 		losing *= 0.9
+
 		var game1 string
 		fmt.Println("Enter the game 1")
 		fmt.Scan(&game1)
@@ -178,6 +127,10 @@ func main() {
 			ending(1)
 		}
 
+		// for the change log
+		winningCh, losingCh = winning, losing
+		scoreArray = append(scoreArray, game1)
+
 		diff := game1Win - game1Lost
 		if diff <= 4 {
 			winning *= 0.9
@@ -192,6 +145,8 @@ func main() {
 			winning *= 1.5
 			losing *= 0.7
 		}
+
+		mapMultArray = append(mapMultArray, fmt.Sprintf("%.2f / %.2f", winning/0.9, losing/0.9) )
 	case 3:
 		var game1 string
 		var game2 string
@@ -234,6 +189,10 @@ func main() {
 			winning *= 1.2
 			losing *= 1.2
 
+			// for the change log
+			winningCh, losingCh = winning, losing
+			scoreArray = append(scoreArray, game1, game2)
+
 			for i := 0; i < 4; i += 2 {
 				diff := diffArray[i] - diffArray[i+1]
 				if diff <= 4 {
@@ -248,8 +207,7 @@ func main() {
 					winningA += 1.5
 					losingA += 1.3
 				}
-				fmt.Println(winningA)
-				fmt.Println(losingA)
+				mapMultArray = append(mapMultArray, fmt.Sprintf("%.2f / %.2f", winning-1.2, losing-1.2) )
 				
 			}
 			winning *= (winningA/2)
@@ -274,6 +232,10 @@ func main() {
 
 			diffArray = append(diffArray, game3Win, game3Lost)
 
+			// for the change log
+			winningCh, losingCh = 1.00, 1.00
+			scoreArray = append(scoreArray, game3)
+
 			for i := 0; i < 4; i += 2 {
 				diff := diffArray[i] - diffArray[i+1]
 				if diff <= 4 {
@@ -288,26 +250,39 @@ func main() {
 					winningA += 1.3
 					losingA += 1.3
 				}
+				mapMultArray = append(mapMultArray, fmt.Sprintf("%.2f / %.2f", winningA, losingA) )
 			}
 			diff := game3Lost - game3Win
+
+			var (
+				winningUpd float64
+				losingUpd float64
+			)
 			if diff <= 4 {
 				winningA += 1.05
+				winningUpd = 1.05
 				losingA += 1.10
+				losingUpd = 1.10
 			} else if diff <= 9 {
 				fmt.Println("cool")
+				winningUpd = 1.0
+				losingUpd = 1.0
 			} else if diff <= 13 {
 				winningA += 0.95
+				winningUpd = 0.95
 				losingA += 1.3
+				losingUpd = 1.3
 			} else if diff <= 16 {
 				winningA += 1.15
+				winningUpd = 1.15
 				losingA += 1.5
+				losingUpd = 1.5
 			}
+			mapMultArray = append(mapMultArray, fmt.Sprintf("%.2f / %.2f", winningUpd, losingUpd) )
 			winning *= (winningA/3)
 			losing *= (losingA/3)			
 		}
 	case 5:
-		
-		
 		//declare initial won games
 		var game1 string
 		fmt.Println("Enter game score 1")
@@ -364,6 +339,8 @@ func main() {
 			winningA += 1.15
 			losingA += 0.85
 		}
+		winningCh, losingCh = winningA, losingA
+		scoreArray = append(scoreArray, game1, game2, game3)
 
 		diffArray := []int{game1Win, game1Lose, game2Win, game2Lose, game3Win, game3Lose}
 
@@ -383,6 +360,7 @@ func main() {
 				winningA += 1.50
 				losingA += 1.40
 			}
+			mapMultArray = append(mapMultArray, fmt.Sprintf("%.2f / %.2f", winningA, losingA) )
 		}
 
 		winning *= (winningA/3)
@@ -409,6 +387,9 @@ func main() {
 			// to make sure it divides correctly
 			mult := 1.0
 
+			// for the change log
+			scoreArray = append(scoreArray, game4)
+
 			if scoring == "3-2" {
 				mult = 2.0
 
@@ -429,6 +410,8 @@ func main() {
 
 				//add the values to the array
 				diffArrayLost = append(diffArrayLost, game5Win, game5Lose) 
+				winningCh, losingCh = 1, 1
+				scoreArray = append(scoreArray, game5)
 			}
 			var winningB float64
 			var losingB float64
@@ -448,6 +431,7 @@ func main() {
 					winningB += 0.50
 					losingB += 0.65
 				}
+				mapMultArray = append(mapMultArray, fmt.Sprintf("%.2f / %.2f", winningB, losingB) )
 			}
 
 			
@@ -457,12 +441,93 @@ func main() {
 	default:
 		ending(3)	
 	}
+	return winning, losing, winningCh, losingCh, scoreArray, mapMultArray
+}
+
+func main() {
+	teamsArray := createTeamArray("rankings.txt")
+	
+	var team1 string
+	fmt.Println("Enter the name of the winning team")
+	fmt.Scan(&team1)
+
+	var team2 string
+	fmt.Println("Enter the name of the losing team")
+	fmt.Scan(&team2)
+
+	// check if values exist, and get values for the array
+	team1Struct := contains(teamsArray, team1)
+	arrayValue1 := containsForCounter(teamsArray, team1)
+	team2Struct := contains(teamsArray, team2)
+	arrayValue2 := containsForCounter(teamsArray, team2)
+	var winning float64
+	var losing float64
+
+	var (
+		bo int
+		scoring	string
+	)
+
+	// insure that the correct values are entered
+	bestOfCorrect := false
+	for bestOfCorrect == false {
+		fmt.Println("Best of how many games?")
+		fmt.Scan(&bo)
+		if bo == 1 || bo == 3 || bo == 5 {
+			bestOfCorrect = true
+			break
+		}
+	}
+	
+	// get scoring for bo
+	fmt.Println("Overall score?")
+	fmt.Scan(&scoring)
+
+	// SCORE DIFFERENCE ASSIGNMENT DISPARITY ON CLOSENESS OF RANKS
+	if (team1Struct.rank <= 15 && team2Struct.rank >= 30) {
+		winning = 5
+		losing = 2
+	} else if (team1Struct.rank - team2Struct.rank < 0) {
+		winning = 5
+		losing = 5
+	} else if team1Struct.rank - team2Struct.rank <= 5{
+		winning = 10
+		losing = 10
+	} else if team1Struct.rank == team2Struct.rank{
+		winning = 7
+		losing = 7
+	} else if team1Struct.rank - team2Struct.rank <= 10 {
+		winning = 15
+		losing = 15
+	} else if team1Struct.rank - team2Struct.rank <= 20 {
+		winning = 20
+		losing = 20
+	} else if team1Struct.rank - team2Struct.rank <= 30 {
+		winning = 25
+		losing = 25
+	} else if team1Struct.rank - team2Struct.rank > 30 {
+		winning = 30
+		losing = 30
+	} 
+	
+	// for the change log
+	winningUpdate := winning
+	// losingUpdate := losing
+	var (
+		winningCh float64
+		losingCh float64
+		scoreArray []string
+		mapMultArray []string
+	)
+
+	// SCORE DIFFERENCE ADJUSTMENT DISPARITY ON BEST OF (X) AND SCORING
+	winning, losing, winningCh, losingCh, scoreArray, mapMultArray = scoreComparison(bo, scoring, winning, losing)
 	
 	// ADJUST NEW SCORES
 	team1Struct.score += winning
 	team2Struct.score -= losing
 	
-	// DELETE OLD FILE AND CREATE NEW ONE
+	// DELETE OLD RANKING FILE AND CREATE NEW ONE
 	err := os.Remove("rankings.txt")
 	if err != nil {
 		log.Fatal(err)
@@ -496,6 +561,32 @@ func main() {
 		}
 		// fmt.Printf("Successfully updated %v bytes", l)
 	}
+
+	// SET UPDATES INTO A FILE
+	// create values for the updates
+
+	var rankDiff int = team1Struct.rank - team2Struct.rank
+
+	// print/add the new values to the file
+	changelog := fmt.Sprintf("\n[%v] beat [%v] in a bo[%v] with a ranking difference of %v in a [%v] resulting in [%v] giving a map multiplier of [%v]/[%v]. The scores were %v giving an overall score multiplier per map of %v. Overall point change of %v.",
+	team1Struct.name, team2Struct.name, bo, rankDiff, winningUpdate, scoring, winningCh, losingCh, scoreArray, mapMultArray, winning)
+
+	newFile, errors := os.OpenFile("record.txt", os.O_RDWR|os.O_APPEND, 0660)
+	if err != nil {
+		log.Fatal(errors)
+	}
+
+	l, err := newFile.WriteString(changelog)
+	if err != nil {
+		fmt.Printf("error printing: %v", err)
+	}
+
+	for i := 0; i < l; i++ {
+		i++
+	}
+
+
+
 	fmt.Println("Enter to close program")
 	var i string
 	fmt.Scanln(&i)
