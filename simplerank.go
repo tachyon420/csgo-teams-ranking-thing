@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Team struct{
@@ -34,14 +35,9 @@ func createTeamArray(filename string) []Team {
 		ending(1)
 	}
 
-	fmt.Println(contents)
-
 	// Convert to string and split each line into a splice
 	teams := string(contents)
-	fmt.Println(teams)
 	teamsB := strings.Split(teams, "\n")
-
-	fmt.Println(teamsB)
 	
 	// Create the 2D splice
 	var teamsA [][]string
@@ -128,25 +124,38 @@ func scoreComparison(bo int, scoring string, winning float64, losing float64) (f
 		}
 
 		// for the change log
-		winningCh, losingCh = winning, losing
+		winningCh, losingCh = 0.9, 0.9
 		scoreArray = append(scoreArray, game1)
+
+		var (
+			winningMultArray float64
+			losingMultArray float64
+		)
 
 		diff := game1Win - game1Lost
 		if diff <= 4 {
 			winning *= 0.9
 			losing *= 0.7
+			winningMultArray = 0.9
+			losingMultArray = 0.8
 		} else if diff <= 9 {
 			winning = winning
 			losing = losing
+			winningMultArray = 0.9
+			losingMultArray = 0.8
 		} else if diff <= 13 {
 			winning *= 1.2
 			losing *= 1.2
+			winningMultArray = 0.9
+			losingMultArray = 0.8
 		} else if diff <= 16 {
 			winning *= 1.5
 			losing *= 0.7
+			winningMultArray = 0.9
+			losingMultArray = 0.8
 		}
 
-		mapMultArray = append(mapMultArray, fmt.Sprintf("%.2f / %.2f", winning/0.9, losing/0.9) )
+		mapMultArray = append(mapMultArray, fmt.Sprintf("%.2f / %.2f", winningMultArray, losingMultArray) )
 	case 3:
 		var game1 string
 		var game2 string
@@ -190,24 +199,36 @@ func scoreComparison(bo int, scoring string, winning float64, losing float64) (f
 			losing *= 1.2
 
 			// for the change log
-			winningCh, losingCh = winning, losing
+			winningCh, losingCh = 1.2, 1.2
 			scoreArray = append(scoreArray, game1, game2)
+
+			var (
+				winningMultArray float64
+				losingMultArray float64
+			)
 
 			for i := 0; i < 4; i += 2 {
 				diff := diffArray[i] - diffArray[i+1]
 				if diff <= 4 {
 					winningA += 0.9
 					losingA += 0.7
+					winningMultArray = 0.9
+					losingMultArray = 0.7
 				} else if diff <= 9 {
-					fmt.Println("cool")
+					winningMultArray = 1.0
+					losingMultArray = 1.0
 				} else if diff <= 13 {
 					winningA += 1.2
 					losingA += 1.2
+					winningMultArray = 1.2
+					losingMultArray = 1.2
 				} else if diff <= 16 {
 					winningA += 1.5
 					losingA += 1.3
+					winningMultArray = 1.5
+					losingMultArray = 1.3
 				}
-				mapMultArray = append(mapMultArray, fmt.Sprintf("%.2f / %.2f", winning-1.2, losing-1.2) )
+				mapMultArray = append(mapMultArray, fmt.Sprintf("%.2f / %.2f", winningMultArray, losingMultArray) )
 				
 			}
 			winning *= (winningA/2)
@@ -235,22 +256,31 @@ func scoreComparison(bo int, scoring string, winning float64, losing float64) (f
 			// for the change log
 			winningCh, losingCh = 1.00, 1.00
 			scoreArray = append(scoreArray, game3)
+			var winningMultArray float64
+			var losingMultArray float64
 
 			for i := 0; i < 4; i += 2 {
 				diff := diffArray[i] - diffArray[i+1]
 				if diff <= 4 {
 					winningA += 0.9
 					losingA += 0.8
+					winningMultArray = 0.9
+					losingMultArray = 0.8
 				} else if diff <= 9 {
-					fmt.Println("cool")
+					winningMultArray = 1.0
+					losingMultArray = 1.0
 				} else if diff <= 13 {
 					winningA += 1.15
 					losingA += 1.15
+					winningMultArray = 1.15
+					losingMultArray = 1.15
 				} else if diff <= 16 {
 					winningA += 1.3
 					losingA += 1.3
+					winningMultArray = 1.3
+					losingMultArray = 1.3
 				}
-				mapMultArray = append(mapMultArray, fmt.Sprintf("%.2f / %.2f", winningA, losingA) )
+				mapMultArray = append(mapMultArray, fmt.Sprintf("%.2f / %.2f", winningMultArray, losingMultArray) )
 			}
 			diff := game3Lost - game3Win
 
@@ -568,8 +598,9 @@ func main() {
 	var rankDiff int = team1Struct.rank - team2Struct.rank
 
 	// print/add the new values to the file
-	changelog := fmt.Sprintf("\n[%v] beat [%v] in a bo[%v] with a ranking difference of %v in a [%v] resulting in [%v] giving a map multiplier of [%v]/[%v]. The scores were %v giving an overall score multiplier per map of %v. Overall point change of %v.",
-	team1Struct.name, team2Struct.name, bo, rankDiff, winningUpdate, scoring, winningCh, losingCh, scoreArray, mapMultArray, winning)
+	changelog := fmt.Sprintf("\n[%v] - [%v] beat [%v] in a bo[%v] with a ranking difference of %v resulting in [%v] points in a [%v] giving a map multiplier of [%v]/[%v]. The scores were %v giving an overall score multiplier per map of %v. Overall point change of %.2f.",
+	time.Now().Format("02-01-2006"), team1Struct.name, team2Struct.name, bo, rankDiff, winningUpdate, scoring, winningCh, losingCh, scoreArray, mapMultArray, winning)
+	// winningUpdate, scoring, winningCh, losingCh, scoreArray, mapMultArray, winning)
 
 	newFile, errors := os.OpenFile("record.txt", os.O_RDWR|os.O_APPEND, 0660)
 	if err != nil {
