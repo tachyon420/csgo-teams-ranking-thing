@@ -17,7 +17,7 @@ type Team struct{
 }
 
 func ending(exStatus int) {
-	fmt.Println("right so you just put a character instead of a number or vice versa... try again bb - \npress x and enter to close program, or anything other character and enter to restart")
+	fmt.Println("Right so you just put a character instead of a number or vice versa... try again bb - \npress x and enter to close program, or anything other character and enter to restart")
 	var x string
 	fmt.Scan(&x)
 	if x == "x" {
